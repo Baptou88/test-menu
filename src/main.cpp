@@ -5,9 +5,10 @@
 
 #include <heltec.h>
 #include <digitalInput.h>
-#include <menu.h>
+#include <menunu.h>
+//#include <menuItem.h>
 
-menu *m;
+menunu *m;
 menuItemList* ml;
 
 digitalInput pin1(36,INPUT_PULLUP);
@@ -80,16 +81,18 @@ void setup() {
     });
 
   ArduinoOTA.begin();
-  Serial.println("poi");
-  ml = new menuItemList(5);
-  ml->addItem(new menuItembool(47,&activate));
-  ml->addItem(new menuItemnew(1));
-  ml->addItem(new menuItemnew(1));
-  ml->addItem(new menuItemnew(2));
-  ml->addItem(new menuItemnew(3));
-  ml->addItem(new menuItemnew(3));
 
-  m = new menu();
+
+  m = new menunu();
+
+  ml = new menuItemList(5,m);
+  ml->addItem(m,new menuItembool(47,&activate));
+  ml->addItem(m,new menuItemnew(1));
+  ml->addItem(m,new menuItemnew(1));
+  ml->addItem(m,new menuItemnew(2));
+  ml->addItem(m,new menuItemnew(3));
+  ml->addItem(m,new menuItemnew(3));
+
   m->actual = ml;
   
   //m.get(0)->draw();
