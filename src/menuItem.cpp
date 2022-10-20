@@ -4,9 +4,9 @@
 #include "menuItem.h"
 
 menuItemBase::menuItemBase(){}
-menuItemBase::menuItemBase(int v)
+menuItemBase::menuItemBase(char* title)
 {
-    _v = v;
+    m_title = title;
 }
 
 // menuItemBase::~menuItemBase()
@@ -19,10 +19,9 @@ void menuItemBase::sayHello(){
 
 
 
-menuItemnew::menuItemnew(int v)
+menuItemnew::menuItemnew(char* title)
 {
-    v++;
-    _v = v;
+    m_title = title;
 }
 
 menuItemnew::~menuItemnew()
@@ -30,9 +29,9 @@ menuItemnew::~menuItemnew()
 }
 
 
-menuItembool::menuItembool(int v , bool * param)
+menuItembool::menuItembool(char* title , bool * param)
 {
-    _v = v;
+    m_title = title;
     _param = param;
 }
 
@@ -78,13 +77,13 @@ void menuItembool::menuItembool::right()
 menuItemList::~menuItemList(){
     
 }
-menuItemList::menuItemList(int v,menunu *m){
+menuItemList::menuItemList(char* title,menunu *m){
     _m = m;
 }
 void menuItemList::select(){
     Serial.println("selected from list");
     Serial.println(selected);
-    Serial.println(items.get(selected)->_v);
+    Serial.println(items.get(selected)->m_title);
     
     if (_m == NULL)
     {
@@ -114,6 +113,98 @@ void menuItemList::left(){
     
     
 }
+
+menuItemInt::menuItemInt(char* title,int* param,int min,int max)
+{
+    m_title = title;
+    m_param = param;
+    m_max = max;
+    m_min = min;
+}
+
+void menuItemInt::draw()
+{
+    Heltec.display->drawString(40,30,(String)*m_param);
+}
+
+void menuItemInt::select()
+{
+    
+}
+
+void menuItemInt::right()
+{
+    Serial.println(*m_param);
+    *m_param = *m_param+1;
+    Serial.println(*m_param);
+}
+
+void menuItemInt::left()
+{
+    *m_param = *m_param-1;
+}
+
+menuItemFloat::menuItemFloat(char* title,float* param,float min,float max)
+{
+    m_title = title;
+    m_param = param;
+    m_max = max;
+    m_min = min;
+}
+
+int menuItemFloat::countDigit(float num)
+{
+    int digits=0;
+    double ori=num;//storing original number
+    long num2=num;
+    while(num2>0)//count no of digits before floating point
+    {
+        digits++;
+        num2=num2/10;
+    }
+    if(ori==0)
+        digits=1;
+    num=ori;
+    double no_float;
+    no_float=ori*(pow(10, (8-digits)));
+    long long int total=(long long int)no_float;
+    int no_of_digits, extrazeroes=0;
+    for(int i=0; i<8; i++)
+    {
+        int dig;
+        dig=total%10;
+        total=total/10;
+        if(dig!=0)
+            break;
+        else
+            extrazeroes++;
+    }
+    no_of_digits=8-extrazeroes;
+    return no_of_digits;
+}
+
+void menuItemFloat::draw()
+{
+    Heltec.display->drawString(20,20,(String)*m_param);
+    Heltec.display->drawString(20,40,(String)countDigit(*m_param));
+}
+
+void menuItemFloat::select()
+{
+    
+}
+
+void menuItemFloat::right()
+{
+    
+}
+
+void menuItemFloat::left()
+{
+    
+}
+
+
 void menuItemList::addItem(menunu *m,menuItemBase* item){
     // nbItem++;
     
@@ -149,7 +240,7 @@ void menuItemList::draw(){
     Heltec.display->drawString(50,0,(String)selected);
     for (size_t i = 0; i < items.size(); i++)
     {
-        Heltec.display->drawString(10,i*12+12,(String)items.get(i)->_v);
+        Heltec.display->drawString(10,i*12+12,(String)items.get(i)->m_title);
 
         if (i == selected)
         {

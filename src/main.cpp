@@ -22,6 +22,12 @@ const char* password = "20AAF66FCE1928F64292F3E28E";
 int state = 0;
 
 bool activate = false;
+bool previous_activate = false;
+int valueInt = 72;
+float valueFloat = 868.4F;
+
+unsigned long prev_millis = 0;
+
 unsigned long prevmillis = 0;
 void setup() {
   // put your setup code here, to run once:
@@ -85,13 +91,13 @@ void setup() {
 
   m = new menunu();
 
-  ml = new menuItemList(5,m);
-  ml->addItem(m,new menuItembool(47,&activate));
-  ml->addItem(m,new menuItemnew(1));
-  ml->addItem(m,new menuItemnew(1));
-  ml->addItem(m,new menuItemnew(2));
-  ml->addItem(m,new menuItemnew(3));
-  ml->addItem(m,new menuItemnew(3));
+  ml = new menuItemList("5",m);
+  ml->addItem(m,new menuItembool("LED",&activate));
+  ml->addItem(m,new menuItemInt("Int",&valueInt,0,100));
+  ml->addItem(m,new menuItemFloat("Float",&valueFloat,float(0),float(100)));
+  ml->addItem(m,new menuItemnew("2"));
+  ml->addItem(m,new menuItemnew("3"));
+  ml->addItem(m,new menuItemnew("3"));
 
   m->actual = ml;
   
@@ -136,6 +142,7 @@ void loop() {
     Heltec.display->drawString(100,20,"37");
     Heltec.display->drawString(20,32,(String)pin1.getState());
     Heltec.display->drawString(100,32,(String)pin2.getState());
+    Heltec.display->drawString(40,50,(String)valueInt);
     break;
   case 1:
 
@@ -160,15 +167,33 @@ void loop() {
     
 
     m->loop();
+
+
     break;
   default:
     break;
   }
  
- 
+  // if (activate != previous_activate)
+  // {
+  //   previous_activate = activate;
+  //   digitalWrite(LED_BUILTIN,activate);
+
+  // }
+  if (activate)
+  {
+    if (millis()> prev_millis + valueInt)
+    {
+      prev_millis = millis();
+      digitalWrite(LED_BUILTIN,!digitalRead(LED_BUILTIN));
+    }
+    
+  }
   
   
-   Heltec.display->display();
+  
+  
+  Heltec.display->display();
 
   ArduinoOTA.handle();
   delay(20);
